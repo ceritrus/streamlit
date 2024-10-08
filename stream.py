@@ -6,7 +6,10 @@ from generation import generate
 from code import code
 from summary import summary
 
+st.set_page_config(page_title="OpenAI Assistant", page_icon="🤖", layout="centered")
+
 client : openai.Client
+
 def check_openai_api_key(api_key):
     client = openai.OpenAI(api_key=api_key)
     try:
@@ -17,8 +20,6 @@ def check_openai_api_key(api_key):
         return True
 	
 def main():
-	
-	
 	api_key = st.text_input("API Key", type="password")
 	if (api_key != ""):
 		if (not check_openai_api_key(api_key)):
