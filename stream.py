@@ -5,6 +5,10 @@ from translation import translate
 from generation import generate
 from code import code
 from summary import summary
+import io
+import requests
+import base64
+from audio_recorder_streamlit import audio_recorder
 
 st.set_page_config(page_title="OpenAI Assistant", page_icon="🤖", layout="centered")
 
@@ -26,6 +30,26 @@ def main():
 			st.write(":red[API Key is invalid]")
 		else:
 			client = openai.Client(api_key=api_key)
+			audio_bytes = audio_recorder(pause_threshold=10.0)
+			# translate = st.toggle("Translate")
+			if audio_bytes:
+				# if translate:
+				# 	print("Translating")
+				# 	buffer = io.BytesIO(audio_bytes)
+				# 	buffer.name = "recorded.mp3"
+				# 	translation = client.audio.translations.create(
+				# 		model="whisper-1",
+				# 		file=buffer
+				# 	)
+				# 	st.markdown(f"{translation.text}")
+				# else:
+				buffer = io.BytesIO(audio_bytes)
+				buffer.name = "segment.mp3"
+				transcript = client.audio.transcriptions.create(
+					model="whisper-1",
+					file=buffer
+				)
+				st.markdown(f"{transcript.text}")
 			col1, col2 = st.columns([3, 1], gap="large")
 			with col2:
 				st.radio("Mode", options=["Translation", "Generation", "Code", "Summary"], key="mode")
